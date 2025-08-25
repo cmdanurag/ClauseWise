@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const API_BASE = "/api/v1"; // vite proxy forwards this to http://127.0.0.1:8000
+const API_BASE = "/api/v1"; // Vite proxy will forward this
 
 // Get supported formats
 export async function getSupportedFormats() {
@@ -9,16 +9,17 @@ export async function getSupportedFormats() {
   return res.json();
 }
 
-// Upload a document
-export async function uploadDocument(file) {
+// Upload & analyze a document
+export async function analyzeDocument(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(`${API_BASE}/documents/upload`, {
+  const res = await fetch(`${API_BASE}/documents/analyze`, {
     method: "POST",
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to upload document");
+  if (!res.ok) throw new Error("Failed to analyze document");
   return res.json();
 }
+
