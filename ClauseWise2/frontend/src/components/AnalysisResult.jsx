@@ -1,4 +1,5 @@
-import React from 'react';
+// frontend/src/components/AnalysisResult.jsx
+import React from "react";
 
 function AnalysisResult({ analysisData, onBack }) {
   return (
