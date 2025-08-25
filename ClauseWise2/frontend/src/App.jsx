@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
-import DocumentUpload from './components/DocumentUpload';
-import AnalysisResult from './components/AnalysisResult';
+// frontend/src/App.jsx
+import React, { useState } from "react";
+import DocumentUpload from "./components/DocumentUpload";
+import AnalysisResult from "./components/AnalysisResult";
 
 function App() {
   const [analysisData, setAnalysisData] = useState(null);
-
-  const handleUploadSuccess = (data) => {
-    setAnalysisData(data);
-  };
-
-  const handleBack = () => {
-    setAnalysisData(null);
-  };
 
   return (
     <div>
@@ -22,9 +15,9 @@ function App() {
 
       <main>
         {analysisData ? (
-          <AnalysisResult analysisData={analysisData} onBack={handleBack} />
+          <AnalysisResult analysisData={analysisData} onBack={() => setAnalysisData(null)} />
         ) : (
-          <DocumentUpload onUploadSuccess={handleUploadSuccess} />
+          <DocumentUpload onUploadSuccess={setAnalysisData} />
         )}
       </main>
     </div>
