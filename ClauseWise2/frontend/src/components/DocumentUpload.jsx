@@ -1,61 +1,39 @@
-// src/components/document/DocumentUpload.jsx
+// frontend/src/components/DocumentUpload.jsx
 import React, { useState } from "react";
-import { uploadDocument } from "@/services/api";
-import { Button } from "@/components/ui/button"; // from shadcn/ui
-import { Loader2 } from "lucide-react"; // nice loading icon
+import { analyzeDocument } from "../services/api";
 
 function DocumentUpload({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("Please select a file.");
-      return;
-    }
+    if (!file) return;
 
     try {
       setLoading(true);
-      const data = await uploadDocument(file); // ⬅️ moved to services layer
+      const data = await analyzeDocument(file);
       onUploadSuccess(data);
     } catch (err) {
-      setError("Upload failed. Try again.");
+      alert(err.message || "Upload failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col items-center gap-4 p-6 border-2 border-dashed rounded-2xl w-full max-w-md mx-auto"
-    >
-      <input
-        type="file"
-        accept=".pdf,.docx"
-        onChange={handleFileChange}
-        className="text-sm"
-      />
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
-      <Button
-        type="submit"
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2"
-      >
-        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+    <form onSubmit={handleSubmit}>
+      <input type="file" accept=".pdf,.docx" onChange={handleFileChange} />
+      <button type="submit" disabled={loading}>
         {loading ? "Analyzing..." : "Upload & Analyze"}
-      </Button>
+      </button>
     </form>
   );
 }
 
 export default DocumentUpload;
+
