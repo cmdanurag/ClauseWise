@@ -1,7 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
 
-
 class Settings(BaseSettings):
     # Application settings
     APP_NAME: str = "ClauseWise"
@@ -10,9 +9,12 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
     
-    # Google GenAI settings
+    # Google GenAI / Vertex AI settings
     GOOGLE_API_KEY: str  # required for google-genai
     AIPLATFORM_MODEL_NAME: str = "gemini-1.5-pro"  # default GenAI model
+    GCP_PROJECT_ID: str ="clausewise-469615" # required for Vertex AI
+    GCP_REGION: str = "us-central1"  # default region
+    VERTEX_AI_ENDPOINT_ID: str  # deployed Vertex AI endpoint ID
 
     # Storage settings
     GCS_BUCKET_NAME: Optional[str] = None
@@ -32,8 +34,6 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
-        # Allow extra fields from environment variables
         extra = "ignore"
-
 
 settings = Settings()

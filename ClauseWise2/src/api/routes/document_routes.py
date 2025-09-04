@@ -1,24 +1,32 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from src.services.text_extraction_service import TextExtractionService
-from src.utils.constants import SupportedFileTypes
+from fastapi import APIRouter, HTTPException, UploadFile, File
+from src.models.document_models import DocumentUploadRequest, DocumentAnalysisResponse
+from src.services.vertex_ai_service import analyze_document
 
 router = APIRouter()
 
-document_service = TextExtractionService()
-
-@router.post("/documents/upload")
-async def upload_document(file: UploadFile = File(...)):
-    """Upload and analyze a document."""
-    #  Validate file type
-    if file.content_type not in SupportedFileTypes.get_all():
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file type: {file.content_type}. "
-                   f"Supported: {SupportedFileTypes.list()}"
-        )
-    
+@router.post(
+    "/documents/upload",
+    response_model=DocumentAnalysisResponse
+)
+async def upload_document(data: DocumentUploadRequest):
     try:
-        result = await document_service.process_document(file)
-        return {"status": "success", "data": result}
+        analysis_result = analyze_document(data.content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    return DocumentAnalysisResponse(status="success", analysis=analysis_result)
+
+
+@router.post(
+    "/documents/upload-file",
+    response_model=DocumentAnalysisResponse
+)
+async def upload_document_file(file: UploadFile = File(...)):
+    try:
+        content = await file.read()
+        text = content.decode("utf-8")  # For PDFs, use a PDF parser instead
+        analysis_result = analyze_document(text)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process file: {str(e)}")
+
+    return DocumentAnalysisResponse(status="success", analysis=analysis_result)
